@@ -1,0 +1,42 @@
+################################################################################
+#                                                                             #
+#  $$$$$$$$\                                                                  #
+#  $$  _____|                                                                 #
+#  $$ |     $$$$$$$\  $$$$$$\  $$$$$$$\   $$$$$$\  $$$$$$\$$$$\  $$\   $$\    #
+#  $$$$$\  $$  _____|$$  __$$\ $$  __$$\ $$  __$$\ $$  _$$  _$$\ $$ |  $$ |   #
+#  $$  __| $$ /      $$ /  $$ |$$ |  $$ |$$ /  $$ |$$ / $$ / $$ |$$ |  $$ |   #
+#  $$ |    $$ |      $$ |  $$ |$$ |  $$ |$$ |  $$ |$$ | $$ | $$ |$$ |  $$ |   #
+#  $$$$$$$$\$$$$$$$\ \$$$$$$  |$$ |  $$ |\$$$$$$  |$$ | $$ | $$ |\$$$$$$$ |   #
+#  \________\_______| \______/ \__|  \__| \______/ \__| \__| \__| \____$$ |   #
+#                                                                $$\   $$ |   #
+#                                                                \$$$$$$  |   #
+#                                                                 \______/    #
+#                                                                             #
+#                           Made by ImDacro                                   #
+#                                                                             #
+################################################################################
+
+# Plugin configuration
+economy:
+    # The currency symbol
+    currency-symbol: "$"
+    # The currency name
+    currency-name: "Dollar"
+    # Amount of money the player starts with
+    start-balance: 100.0
+
+
+# Database configuration
+# The database is used to store the player's balance.
+# TYPE: mariadb, litesql
+database:
+  type: litesql
+  mariadb:
+    host: "localhost"
+    port: 3306
+    database: "economy"
+    username: "user"
+    password: ""
+  litesql:
+    file: "economy.db"
+

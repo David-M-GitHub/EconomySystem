@@ -1,0 +1,13 @@
+name: EconomySystem
+version: '1.0-SNAPSHOT'
+main: de.imdacro.economySystem.EconomySystem
+api-version: '1.21'
+authors: [ ImDacro ]
+softdepend:
+  - Vault
+
+commands:
+  balance:
+    description: Shows the balance of a player
+    usage: /balance [player]
+    permission: economysystem.command.balance
