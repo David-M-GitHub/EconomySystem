@@ -11,3 +11,7 @@ commands:
     description: Shows the balance of a player
     usage: /balance [player]
     permission: economysystem.command.balance
+  pay:
+    description: Pay a player
+    usage: /pay <player> <amount>
+    permission: economysystem.command.pay

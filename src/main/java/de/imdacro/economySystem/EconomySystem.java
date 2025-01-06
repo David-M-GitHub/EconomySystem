@@ -1,6 +1,7 @@
 package de.imdacro.economySystem;
 
 import de.imdacro.economySystem.commands.BalanceCommand;
+import de.imdacro.economySystem.commands.PayCommand;
 import de.imdacro.economySystem.database.DatabaseManager;
 import de.imdacro.economySystem.database.LiteSQLManager;
 import de.imdacro.economySystem.database.MariaDBManager;
@@ -32,6 +33,7 @@ public final class EconomySystem extends JavaPlugin {
 
         // Register commands
         this.getCommand("balance").setExecutor(new BalanceCommand(this));
+        this.getCommand("pay").setExecutor(new PayCommand(this));
 
         setupDatabase();
 

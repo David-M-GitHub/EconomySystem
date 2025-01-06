@@ -3,6 +3,12 @@
   "plugin-enabled": "<green>The plugin has been enabled!</green>",
   "plugin-disabled": "<red>The plugin has been disabled!</red>",
   "player-not-player": "<red>This command can only be run by a player.",
+  "usage": "<red>Usage: %usage%",
   "balance-message-own": "<green>Your balance is: %balance%",
-  "balance-message-other": "<green>%player% balance is: %balance%"
+  "balance-message-other": "<green>%player% balance is: %balance%",
+  "player-not-found": "<red>Player not found!",
+  "pay-self": "<red>You can't pay yourself!",
+  "not-enough-money": "<red>You don't have enough money!",
+  "pay-success-sender": "<green>You have paid %player% %amount%!",
+  "pay-success-receiver": "<green>%player% has paid you %amount%!"
 }

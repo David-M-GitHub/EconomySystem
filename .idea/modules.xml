@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/EconomySystem.main.iml" filepath="$PROJECT_DIR$/.idea/modules/EconomySystem.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/de.imdacro.EconomySystem.main.iml" filepath="$PROJECT_DIR$/.idea/modules/de.imdacro.EconomySystem.main.iml" />
     </modules>
   </component>
 </project>

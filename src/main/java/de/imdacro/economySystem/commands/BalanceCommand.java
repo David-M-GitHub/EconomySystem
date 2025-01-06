@@ -35,7 +35,19 @@ public class BalanceCommand implements CommandExecutor {
             return true;
         }
 
+        if (!player.hasPermission("economysystem.command.balance.other")) {
+            player.sendMessage(plugin.getMessages().get("no-permission"));
+            return true;
+        }
 
+        Player target = Bukkit.getPlayer(args[0]);
+        if (target == null) {
+            player.sendMessage(plugin.getMessages().get("player-not-found"));
+            return true;
+        }
+
+        double balance = databaseManager.getBalance(target.getUniqueId().toString());
+        player.sendMessage(plugin.getMessages().get("balance-message-other", "%player%", target.getName(), "%balance%", String.valueOf(balance)));
 
         return true;
     }

@@ -43,10 +43,6 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-jar {
-    destinationDirectory = file("C:/Sherblock/citybuild/plugins")
-}
-
 processResources {
     def props = [version: version]
     inputs.properties props

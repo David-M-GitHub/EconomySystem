@@ -39,4 +39,3 @@ database:
     password: ""
   litesql:
     file: "economy.db"
-
