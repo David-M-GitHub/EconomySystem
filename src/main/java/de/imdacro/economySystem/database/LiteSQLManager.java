@@ -142,6 +142,19 @@ public class LiteSQLManager implements DatabaseManager {
         setBalance(uuid, currentBalance - amount);
     }
 
+    public void createTransaction(String uuidFrom, String uuidTo, double amount) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO economy_transactions (uuid_from, uuid_to, amount) VALUES (?, ?, ?)")) {
+            ps.setString(1, uuidFrom);
+            ps.setString(2, uuidTo);
+            ps.setDouble(3, amount);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            plugin.getLogger().severe("Error creating transaction for " + uuidFrom + " to " + uuidTo);
+        }
+    }
+
     @Override
     public void close() {
         if (connection != null) {

@@ -129,6 +129,20 @@ public class MariaDBManager implements DatabaseManager {
     }
 
     @Override
+    public void createTransaction(String uuidFrom, String uuidTo, double amount) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "INSERT INTO economy_transactions (uuid_from, uuid_to, amount) VALUES (?, ?, ?)")) {
+            ps.setString(1, uuidTo);
+            ps.setString(2, uuidTo);
+            ps.setDouble(3, amount);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            plugin.getLogger().severe("Error creating transaction from " + uuidFrom + " to " + uuidTo + " with amount " + amount);
+        }
+    }
+
+    @Override
     public void close() {
         if (connection != null) {
             try {

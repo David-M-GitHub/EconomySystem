@@ -1,12 +1,14 @@
 package de.imdacro.economySystem;
 
 import de.imdacro.economySystem.commands.BalanceCommand;
+import de.imdacro.economySystem.commands.EconomyAdminCommand;
 import de.imdacro.economySystem.commands.PayCommand;
 import de.imdacro.economySystem.database.DatabaseManager;
 import de.imdacro.economySystem.database.LiteSQLManager;
 import de.imdacro.economySystem.database.MariaDBManager;
 import de.imdacro.economySystem.listener.PlayerJoinListener;
 import de.imdacro.economySystem.utils.Messages;
+import de.imdacro.economySystem.vault.Vault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,8 +36,12 @@ public final class EconomySystem extends JavaPlugin {
         // Register commands
         this.getCommand("balance").setExecutor(new BalanceCommand(this));
         this.getCommand("pay").setExecutor(new PayCommand(this));
+        this.getCommand("economyadmin").setExecutor(new EconomyAdminCommand(this));
 
         setupDatabase();
+
+        // Vault integration
+        new Vault(this);
 
         getServer().getConsoleSender().sendMessage(messages.get("plugin-enabled"));
     }
@@ -69,6 +75,10 @@ public final class EconomySystem extends JavaPlugin {
                 return;
         }
         databaseManager.connect();
+    }
+
+    public String formatBalance(double balance) {
+        return String.format("%,.0f", balance);
     }
 
     @Override

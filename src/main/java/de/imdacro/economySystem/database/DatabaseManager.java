@@ -11,4 +11,5 @@ public interface DatabaseManager {
     void setBalance(String uuid, double balance);
     void addBalance(String uuid, double amount);
     void removeBalance(String uuid, double amount);
+    void createTransaction(String uuidFrom, String uuidTo, double amount);
 }
