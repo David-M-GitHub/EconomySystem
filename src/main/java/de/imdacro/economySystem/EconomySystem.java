@@ -7,6 +7,7 @@ import de.imdacro.economySystem.commands.PayCommand;
 import de.imdacro.economySystem.database.DatabaseManager;
 import de.imdacro.economySystem.database.LiteSQLManager;
 import de.imdacro.economySystem.database.MariaDBManager;
+import de.imdacro.economySystem.events.BalanceChangeEvent;
 import de.imdacro.economySystem.listener.PlayerJoinListener;
 import de.imdacro.economySystem.utils.Messages;
 import de.imdacro.economySystem.vault.Vault;

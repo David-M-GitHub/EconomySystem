@@ -1,6 +1,8 @@
 package de.imdacro.economySystem.database;
 
 import de.imdacro.economySystem.EconomySystem;
+import de.imdacro.economySystem.events.BalanceChangeEvent;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.io.IOException;
@@ -125,6 +127,11 @@ public class LiteSQLManager implements DatabaseManager {
             statement.setDouble(1, balance);
             statement.setString(2, uuid);
             statement.executeUpdate();
+
+            // Call Event
+            BalanceChangeEvent balanceChangeEvent = new BalanceChangeEvent(Bukkit.getPlayer(UUID.fromString(uuid)), balance, !Bukkit.isPrimaryThread());
+            Bukkit.getPluginManager().callEvent(balanceChangeEvent);
+
         } catch (SQLException e) {
             e.printStackTrace();
             plugin.getLogger().severe("Error setting balance for UUID: " + uuid);
