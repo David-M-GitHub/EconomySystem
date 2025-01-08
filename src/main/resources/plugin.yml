@@ -19,3 +19,7 @@ commands:
     description: Economy admin commands
     usage: /economyadmin <set|add|remove> <player> <amount>
     permission: economysystem.command.economyadmin
+  balancetop:
+    description: Shows the top 10 players with the highest balance
+    usage: /balancetop
+    permission: economysystem.command.balancetop

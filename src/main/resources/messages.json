@@ -10,5 +10,8 @@
   "pay-self": "<red>You can't pay yourself!",
   "not-enough-money": "<red>You don't have enough money!",
   "pay-success-sender": "<green>You have paid %player% %amount%!",
-  "pay-success-receiver": "<green>%player% has paid you %amount%!"
+  "pay-success-receiver": "<green>%player% has paid you %amount%!",
+  "top-list-title": "<green>Top 10 richest players:",
+  "top-list-entry": "<green>%position%. %player% - %balance%",
+  "top-list-footer": "<green>"
 }

@@ -65,6 +65,9 @@ public class PayCommand implements CommandExecutor {
         databaseManager.removeBalance(player.getUniqueId().toString(), amount);
         databaseManager.addBalance(target.getUniqueId().toString(), amount);
 
+        // Create Transaction
+        databaseManager.createTransaction(player.getUniqueId().toString(), target.getUniqueId().toString(), amount);
+
         player.sendMessage(plugin.getMessages().get("pay-success-sender", "%player%", target.getName(), "%amount%", String.valueOf(amount)));
         target.sendMessage(plugin.getMessages().get("pay-success-receiver", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
 

@@ -5,6 +5,8 @@ import de.imdacro.economySystem.EconomySystem;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class LiteSQLManager implements DatabaseManager {
 
@@ -79,6 +81,7 @@ public class LiteSQLManager implements DatabaseManager {
             ps.setDouble(2, startBalance);
             ps.executeUpdate();
             plugin.getLogger().info("Account created for " + uuid + " with balance " + startBalance);
+            createTransaction("SERVER", uuid, startBalance);
         } catch (SQLException e) {
             e.printStackTrace();
             plugin.getLogger().severe("Error creating account for " + uuid);
@@ -153,6 +156,32 @@ public class LiteSQLManager implements DatabaseManager {
             e.printStackTrace();
             plugin.getLogger().severe("Error creating transaction for " + uuidFrom + " to " + uuidTo);
         }
+    }
+
+    @Override
+    public HashMap<String, Double> getTopBalances(int limit) {
+        HashMap<String, Double> topBalances = new HashMap<>();
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet resultSet = stmt.executeQuery("SELECT uuid, balance FROM economy ORDER BY balance DESC LIMIT " + limit*2);
+            while (resultSet.next()) {
+
+                // Check if Permission ignore
+                if (plugin.getServer().getOfflinePlayer(UUID.fromString(resultSet.getString("uuid"))) != null && plugin.getServer().getOfflinePlayer(UUID.fromString(resultSet.getString("uuid"))).getPlayer().hasPermission("economysystem.toplist.ignore")) {
+                    continue;
+                }
+
+                // Check if already Limit
+                if (topBalances.size() >= limit) {
+                    break;
+                }
+
+                topBalances.put(resultSet.getString("uuid"), resultSet.getDouble("balance"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            plugin.getLogger().severe("Error fetching top balances.");
+        }
+        return topBalances;
     }
 
     @Override

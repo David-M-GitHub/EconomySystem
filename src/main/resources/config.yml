@@ -26,6 +26,7 @@ economy:
     start-balance: 100.0
 
 
+
 # Database configuration
 # The database is used to store the player's balance.
 # TYPE: mariadb, litesql

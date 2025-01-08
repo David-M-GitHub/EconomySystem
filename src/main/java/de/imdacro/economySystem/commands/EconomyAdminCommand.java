@@ -25,7 +25,6 @@ public class EconomyAdminCommand implements CommandExecutor {
         // TODO: Implement the economy admin command
 
 
-
         return true;
     }
 }
