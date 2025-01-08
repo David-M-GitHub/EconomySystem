@@ -14,7 +14,7 @@
   "top-list-title": "<green>Top 10 richest players:",
   "top-list-entry": "<green>%position%. %player% - %balance%",
   "top-list-footer": "<green>",
-    "set-balance-success": "<green>You have set %player% balance to %amount%!",
-    "add-balance-success": "<green>You have added %amount% to %player% balance!",
-    "remove-balance-success": "<green>You have removed %amount% from %player% balance!"
+  "set-balance-success": "<green>You have set %player% balance to %amount%!",
+  "add-balance-success": "<green>You have added %amount% to %player% balance!",
+  "remove-balance-success": "<green>You have removed %amount% from %player% balance!"
 }
