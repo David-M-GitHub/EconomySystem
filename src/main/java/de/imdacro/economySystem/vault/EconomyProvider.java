@@ -70,22 +70,26 @@ public class EconomyProvider extends AbstractEconomy {
   
   public EconomyResponse withdrawPlayer(String playerName, double amount) {
     plugin.getDatabaseManager().removeBalance(Bukkit.getOfflinePlayer(playerName).getUniqueId().toString(), amount);
+    plugin.getDatabaseManager().createTransaction(Bukkit.getOfflinePlayer(playerName).getUniqueId().toString(), "VAULT", amount);
     return new EconomyResponse(amount, 0.0D, EconomyResponse.ResponseType.SUCCESS, "Error withdrawing money");
   }
   
   public EconomyResponse withdrawPlayer(String playerName, String worldName, double amount) {
     plugin.getDatabaseManager().removeBalance(Bukkit.getOfflinePlayer(playerName).getUniqueId().toString(), amount);
+    plugin.getDatabaseManager().createTransaction(Bukkit.getOfflinePlayer(playerName).getUniqueId().toString(), "VAULT", amount);
     return new EconomyResponse(amount, 0.0D, EconomyResponse.ResponseType.SUCCESS, "Error withdrawing money");
   }
   
   public EconomyResponse depositPlayer(String playerName, double amount) {
     plugin.getDatabaseManager().addBalance(Bukkit.getOfflinePlayer(playerName).getUniqueId().toString(), amount);
-    return new EconomyResponse(0.0D, 0.0D, EconomyResponse.ResponseType.SUCCESS, "Error depositing money");
+    plugin.getDatabaseManager().createTransaction("VAULT", Bukkit.getOfflinePlayer(playerName).getUniqueId().toString(), amount);
+    return new EconomyResponse(amount, 0.0D, EconomyResponse.ResponseType.SUCCESS, "Error depositing money");
   }
   
   public EconomyResponse depositPlayer(String playerName, String worldName, double amount) {
     plugin.getDatabaseManager().addBalance(Bukkit.getOfflinePlayer(playerName).getUniqueId().toString(), amount);
-    return new EconomyResponse(0.0D, 0.0D, EconomyResponse.ResponseType.SUCCESS, "Error depositing money");
+    plugin.getDatabaseManager().createTransaction("VAULT", Bukkit.getOfflinePlayer(playerName).getUniqueId().toString(), amount);
+    return new EconomyResponse(amount, 0.0D, EconomyResponse.ResponseType.SUCCESS, "Error depositing money");
   }
   
   public EconomyResponse createBank(String name, String player) {

@@ -17,9 +17,14 @@ commands:
     permission: economysystem.command.pay
   economyadmin:
     description: Economy admin commands
+    aliases:
+      - ecoa
     usage: /economyadmin <set|add|remove> <player> <amount>
     permission: economysystem.command.economyadmin
   balancetop:
     description: Shows the top 10 players with the highest balance
+    aliases:
+      - baltop
+      - topbalance
     usage: /balancetop
     permission: economysystem.command.balancetop
