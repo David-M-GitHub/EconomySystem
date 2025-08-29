@@ -10,6 +10,7 @@ import de.imdacro.economySystem.database.MariaDBManager;
 import de.imdacro.economySystem.events.BalanceChangeEvent;
 import de.imdacro.economySystem.listener.PlayerJoinListener;
 import de.imdacro.economySystem.utils.Messages;
+import de.imdacro.economySystem.utils.Metrics;
 import de.imdacro.economySystem.vault.Vault;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,6 +31,15 @@ public final class EconomySystem extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        // Metrics Data
+        int pluginId = 27089;
+        Metrics metrics = new Metrics(this, pluginId);
+
+        metrics.addCustomChart(new Metrics.SimplePie("currency_type", () -> {
+            return getConfig().getString("economy.currency-name");
+        }));
+
 
         // Register listeners
         PluginManager pluginManager = getServer().getPluginManager();
