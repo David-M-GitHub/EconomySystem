@@ -34,6 +34,11 @@ public class Messages {
         String message = messages.get(key).getAsString();
         message = applyPlaceholders(message, placeholders);
 
+        // Don't add prefix if the key IS the prefix or if message already contains prefix logic
+        if (key.equals("prefix") || message.startsWith("<green>[EconomySystem]</green>")) {
+            return miniMessage.deserialize(message);
+        }
+
         // Präfix hinzufügen und Nachricht deserialisieren
         return miniMessage.deserialize(prefix + " " + message);
     }

@@ -55,18 +55,29 @@ public class PayCommand implements CommandExecutor {
         }
 
         DatabaseManager databaseManager = plugin.getDatabaseManager();
-        double playerBalance = databaseManager.getBalance(player.getUniqueId().toString());
+        String playerUuid = player.getUniqueId().toString();
+        String targetUuid = target.getUniqueId().toString();
+
+        // Ensure accounts exist
+        if (!databaseManager.accountExists(playerUuid)) {
+            databaseManager.createAccount(playerUuid);
+        }
+        if (!databaseManager.accountExists(targetUuid)) {
+            databaseManager.createAccount(targetUuid);
+        }
+
+        double playerBalance = databaseManager.getBalance(playerUuid);
 
         if (playerBalance < amount) {
             commandSender.sendMessage(plugin.getMessages().get("not-enough-money"));
             return true;
         }
 
-        databaseManager.removeBalance(player.getUniqueId().toString(), amount);
-        databaseManager.addBalance(target.getUniqueId().toString(), amount);
+        databaseManager.removeBalance(playerUuid, amount);
+        databaseManager.addBalance(targetUuid, amount);
 
         // Create Transaction
-        databaseManager.createTransaction(player.getUniqueId().toString(), target.getUniqueId().toString(), amount);
+        databaseManager.createTransaction(playerUuid, targetUuid, amount);
 
         player.sendMessage(plugin.getMessages().get("pay-success-sender", "%player%", target.getName(), "%amount%", String.valueOf(amount)));
         target.sendMessage(plugin.getMessages().get("pay-success-receiver", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
