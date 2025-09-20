@@ -24,15 +24,21 @@ public class BalanceTopCommand implements CommandExecutor {
         // Get Top 10 players with the highest balance
         HashMap<String, Double> topBalances = plugin.getDatabaseManager().getTopBalances(10);
 
+        plugin.getLogger().info("BalanceTop: Found " + topBalances.size() + " players");
+
         // Send the top balances to the command sender
         commandSender.sendMessage(plugin.getMessages().get("top-list-title"));
-        for (int i = 0; i < topBalances.size(); i++) {
-            String uuid = (String) topBalances.keySet().toArray()[i];
-            double balance = topBalances.get(uuid);
+        if (topBalances.isEmpty()) {
+            commandSender.sendMessage(plugin.getMessages().get("no-players-found"));
+        } else {
+            for (int i = 0; i < topBalances.size(); i++) {
+                String uuid = (String) topBalances.keySet().toArray()[i];
+                double balance = topBalances.get(uuid);
 
-            commandSender.sendMessage(plugin.getMessages().get("top-list-entry", "%position%", String.valueOf(i + 1), "%player%", plugin.getServer().getOfflinePlayer(UUID.fromString(uuid)).getName(), "%balance%", String.valueOf(balance)));
+                commandSender.sendMessage(plugin.getMessages().get("top-list-entry", "%position%", String.valueOf(i + 1), "%player%", plugin.getServer().getOfflinePlayer(UUID.fromString(uuid)).getName(), "%balance%", String.valueOf(balance)));
+            }
         }
-        commandSender.sendMessage(plugin.getMessages().get("top-list-footer"));
+        // Don't send empty footer
 
 
 

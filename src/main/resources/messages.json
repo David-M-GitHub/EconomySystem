@@ -16,5 +16,7 @@
   "top-list-footer": "<green>",
   "balance-set-success": "<green>You have set %player% balance to %amount%!",
   "balance-add-success": "<green>You have added %amount% to %player% balance!",
-  "remove-balance-success": "<green>You have removed %amount% from %player% balance!"
+  "remove-balance-success": "<green>You have removed %amount% from %player% balance!",
+  "no-permission": "<red>You don't have permission to do this!",
+  "no-players-found": "<red>No players found in the economy database."
 }

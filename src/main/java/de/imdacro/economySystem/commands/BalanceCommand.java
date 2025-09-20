@@ -5,6 +5,7 @@ import de.imdacro.economySystem.database.DatabaseManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,7 +30,11 @@ public class BalanceCommand implements CommandExecutor {
         DatabaseManager databaseManager = plugin.getDatabaseManager();
 
         if (args.length == 0) {
-            double balance = databaseManager.getBalance(player.getUniqueId().toString());
+            String uuid = player.getUniqueId().toString();
+            if (!databaseManager.accountExists(uuid)) {
+                databaseManager.createAccount(uuid);
+            }
+            double balance = databaseManager.getBalance(uuid);
 
             player.sendMessage(plugin.getMessages().get("balance-message-own", "%balance%", String.valueOf(balance)));
             return true;
@@ -40,13 +45,17 @@ public class BalanceCommand implements CommandExecutor {
             return true;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
-        if (target == null) {
+        OfflinePlayer target = plugin.getServer().getOfflinePlayer(args[0]);
+        if (!target.hasPlayedBefore() && !target.isOnline()) {
             player.sendMessage(plugin.getMessages().get("player-not-found"));
             return true;
         }
 
-        double balance = databaseManager.getBalance(target.getUniqueId().toString());
+        String targetUuid = target.getUniqueId().toString();
+        if (!databaseManager.accountExists(targetUuid)) {
+            databaseManager.createAccount(targetUuid);
+        }
+        double balance = databaseManager.getBalance(targetUuid);
         player.sendMessage(plugin.getMessages().get("balance-message-other", "%player%", target.getName(), "%balance%", String.valueOf(balance)));
 
         return true;
