@@ -28,12 +28,16 @@ public class MariaDBManager implements DatabaseManager {
         String url = "jdbc:mariadb://" + host + ":" + port + "/" + database;
 
         try {
+            Class.forName("org.mariadb.jdbc.Driver");
             connection = DriverManager.getConnection(url, username, password);
             plugin.getLogger().info("Connected to MariaDB database at " + host + ":" + port + "/" + database);
 
             createTables();
         } catch (SQLException e) {
             plugin.getLogger().severe("Error connecting to MariaDB database: " + e.getMessage());
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            plugin.getLogger().severe("MariaDB JDBC driver not found: " + e.getMessage());
             e.printStackTrace();
         }
     }
