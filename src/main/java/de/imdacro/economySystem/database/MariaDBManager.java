@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 
 import java.sql.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class MariaDBManager implements DatabaseManager {
@@ -28,12 +29,16 @@ public class MariaDBManager implements DatabaseManager {
         String url = "jdbc:mariadb://" + host + ":" + port + "/" + database;
 
         try {
+            Class.forName("org.mariadb.jdbc.Driver");
             connection = DriverManager.getConnection(url, username, password);
             plugin.getLogger().info("Connected to MariaDB database at " + host + ":" + port + "/" + database);
 
             createTables();
         } catch (SQLException e) {
             plugin.getLogger().severe("Error connecting to MariaDB database: " + e.getMessage());
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            plugin.getLogger().severe("MariaDB JDBC driver not found: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -142,7 +147,7 @@ public class MariaDBManager implements DatabaseManager {
     public void createTransaction(String uuidFrom, String uuidTo, double amount) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO economy_transactions (uuid_from, uuid_to, amount) VALUES (?, ?, ?)")) {
-            ps.setString(1, uuidTo);
+            ps.setString(1, uuidFrom);
             ps.setString(2, uuidTo);
             ps.setDouble(3, amount);
             ps.executeUpdate();
@@ -154,23 +159,23 @@ public class MariaDBManager implements DatabaseManager {
 
     @Override
     public HashMap<String, Double> getTopBalances(int limit) {
-        HashMap<String, Double> topBalances = new HashMap<>();
+        LinkedHashMap<String, Double> topBalances = new LinkedHashMap<>();
         try (Statement stmt = connection.createStatement()) {
-            ResultSet resultSet = stmt.executeQuery("SELECT uuid, balance FROM economy ORDER BY balance DESC LIMIT " + limit*2);
+            String query = "SELECT uuid, balance FROM economy ORDER BY balance DESC LIMIT " + limit;
+            plugin.getLogger().info("Executing query: " + query);
+            ResultSet resultSet = stmt.executeQuery(query);
+
+            int rowCount = 0;
             while (resultSet.next()) {
+                rowCount++;
+                String uuid = resultSet.getString("uuid");
+                double balance = resultSet.getDouble("balance");
+                plugin.getLogger().info("Processing row " + rowCount + ": UUID=" + uuid + ", Balance=" + balance);
 
-                // Check if Permission ignore
-                if (plugin.getServer().getOfflinePlayer(UUID.fromString(resultSet.getString("uuid"))) != null && plugin.getServer().getOfflinePlayer(UUID.fromString(resultSet.getString("uuid"))).getPlayer().hasPermission("economysystem.toplist.ignore")) {
-                    continue;
-                }
-
-                // Check if already Limit
-                if (topBalances.size() >= limit) {
-                    break;
-                }
-
-                topBalances.put(resultSet.getString("uuid"), resultSet.getDouble("balance"));
+                topBalances.put(uuid, balance);
+                plugin.getLogger().info("Added player to top list: " + uuid + " with balance " + balance);
             }
+            plugin.getLogger().info("Total rows processed: " + rowCount + ", Final map size: " + topBalances.size());
         } catch (SQLException e) {
             e.printStackTrace();
             plugin.getLogger().severe("Error fetching top balances!");
