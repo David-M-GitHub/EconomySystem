@@ -29,6 +29,8 @@ public final class EconomySystem extends JavaPlugin {
         loadMessages();
     }
 
+    //TODO: Add Async where possible - database operations, event calls, etc.
+
     @Override
     public void onEnable() {
 
