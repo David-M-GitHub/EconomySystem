@@ -8,11 +8,15 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MariaDBManager implements DatabaseManager {
 
     private final EconomySystem plugin;
     private Connection connection;
+    private final ExecutorService dbExecutor = Executors.newFixedThreadPool(4);
 
     public MariaDBManager(EconomySystem plugin) {
         this.plugin = plugin;
@@ -81,6 +85,10 @@ public class MariaDBManager implements DatabaseManager {
         }
     }
 
+    public CompletableFuture<Void> createAccountAsync(String uuid) {
+        return CompletableFuture.runAsync(() -> createAccount(uuid), dbExecutor);
+    }
+
     public boolean accountExists(String uuid) {
         try (PreparedStatement ps = connection.prepareStatement("SELECT 1 FROM economy WHERE uuid = ? LIMIT 1")) {
             ps.setString(1, uuid);
@@ -91,6 +99,10 @@ public class MariaDBManager implements DatabaseManager {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public CompletableFuture<Boolean> accountExistsAsync(String uuid) {
+        return CompletableFuture.supplyAsync(() -> accountExists(uuid), dbExecutor);
     }
 
     @Override
@@ -108,6 +120,10 @@ public class MariaDBManager implements DatabaseManager {
             plugin.getLogger().severe("Error fetching balance for UUID: " + uuid);
         }
         return balance;
+    }
+
+    public CompletableFuture<Double> getBalanceAsync(String uuid) {
+        return CompletableFuture.supplyAsync(() -> getBalance(uuid), dbExecutor);
     }
 
     @Override
@@ -129,9 +145,17 @@ public class MariaDBManager implements DatabaseManager {
         }
     }
 
+    public CompletableFuture<Void> setBalanceAsync(String uuid, double balance) {
+        return CompletableFuture.runAsync(() -> getBalance(uuid), dbExecutor);
+    }
+
     @Override
     public void addBalance(String uuid, double amount) {
         setBalance(uuid, getBalance(uuid) + amount);
+    }
+
+    public CompletableFuture<Void> addBalanceAsync(String uuid, double amount) {
+        return getBalanceAsync(uuid).thenCompose(current -> setBalanceAsync(uuid, current + amount));
     }
 
     @Override
@@ -141,6 +165,13 @@ public class MariaDBManager implements DatabaseManager {
             amount = currentBalance;
         }
         setBalance(uuid, currentBalance - amount);
+    }
+
+    public CompletableFuture<Void> removeBalanceAsync(String uuid, double amount) {
+        return getBalanceAsync(uuid).thenCompose(current -> {
+            double toRemove = Math.min(amount, current);
+            return setBalanceAsync(uuid, current - toRemove);
+        });
     }
 
     @Override
@@ -155,6 +186,10 @@ public class MariaDBManager implements DatabaseManager {
             e.printStackTrace();
             plugin.getLogger().severe("Error creating transaction from " + uuidFrom + " to " + uuidTo + " with amount " + amount);
         }
+    }
+
+    public CompletableFuture<Void> createTransactionAsync(String uuidFrom, String uuidTo, double amount) {
+        return CompletableFuture.runAsync(() -> createTransaction(uuidFrom, uuidTo, amount), dbExecutor);
     }
 
     @Override
@@ -183,6 +218,10 @@ public class MariaDBManager implements DatabaseManager {
         return topBalances;
     }
 
+    public CompletableFuture<HashMap<String, Double>> getTopBalancesAsync(int limit) {
+        return CompletableFuture.supplyAsync(() -> getTopBalances(limit), dbExecutor);
+    }
+
     @Override
     public void close() {
         if (connection != null) {
@@ -194,6 +233,8 @@ public class MariaDBManager implements DatabaseManager {
                 e.printStackTrace();
             }
         }
+        dbExecutor.shutdown();
+        plugin.getLogger().info("DB executor shutdown initiated.");
     }
 
     public Connection getConnection() {
