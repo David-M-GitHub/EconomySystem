@@ -66,11 +66,11 @@ public class EconomyAdminCommand implements CommandExecutor {
         switch (args[0]) {
             case "set":
                 plugin.getDatabaseManager().setBalance(playerUuid, amount);
-                commandSender.sendMessage(plugin.getMessages().get("balance-set-success", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
+                commandSender.sendMessage(plugin.getMessages().get("set-balance-success", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
                 break;
             case "add":
                 plugin.getDatabaseManager().addBalance(playerUuid, amount);
-                commandSender.sendMessage(plugin.getMessages().get("balance-add-success", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
+                commandSender.sendMessage(plugin.getMessages().get("add-balance-success", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
                 break;
             case "remove":
                 plugin.getDatabaseManager().removeBalance(playerUuid, amount);

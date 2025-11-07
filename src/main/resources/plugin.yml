@@ -10,6 +10,12 @@ commands:
   balance:
     description: Shows the balance of a player
     usage: /balance [player]
+    aliases:
+      - bal
+      - money
+      - pfund
+      - coins
+      - geld
     permission: economysystem.command.balance
   pay:
     description: Pay a player
@@ -26,5 +32,7 @@ commands:
     aliases:
       - baltop
       - topbalance
+      - topbal
+      - topgeld 
     usage: /balancetop
     permission: economysystem.command.balancetop
