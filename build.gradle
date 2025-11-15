@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'com.gradleup.shadow' version '9.2.2'
 }
 
 group = 'de.imdacro'
-version = '1.1-SNAPSHOT'
+version = '1.31'
 
 repositories {
     mavenCentral()
@@ -15,17 +16,30 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    maven {
+        url = 'https://repo.extendedclip.com/releases/'
+    }
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT'
 
+    // Add PlaceholderAPI
+    compileOnly 'me.clip:placeholderapi:2.11.7'
+
     // Add Vault
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
 
     // MariaDB JDBC Driver
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.2.0'
+    implementation 'com.zaxxer:HikariCP:5.1.0'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
+}
+
+
+shadowJar {
+    relocate 'com.zaxxer.hikari', 'de.imdacro.libs.hikari'
+    relocate 'org.mariadb.jdbc', 'de.imdacro.libs.mariadb'
 }
 
 def targetJavaVersion = 21

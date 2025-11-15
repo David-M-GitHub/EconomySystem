@@ -1,6 +1,6 @@
 package de.imdacro.economySystem.database;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public interface DatabaseManager {
     void connect();
@@ -15,5 +15,5 @@ public interface DatabaseManager {
     void removeBalance(String uuid, double amount);
     void createTransaction(String uuidFrom, String uuidTo, double amount);
 
-    HashMap<String, Double> getTopBalances(int limit);
+    LinkedHashMap<String, Double> getTopBalances(int limit);
 }

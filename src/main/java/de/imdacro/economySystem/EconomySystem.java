@@ -9,9 +9,11 @@ import de.imdacro.economySystem.database.LiteSQLManager;
 import de.imdacro.economySystem.database.MariaDBManager;
 import de.imdacro.economySystem.events.BalanceChangeEvent;
 import de.imdacro.economySystem.listener.PlayerJoinListener;
+import de.imdacro.economySystem.placeholderapi.MoneyTopExpansion;
 import de.imdacro.economySystem.utils.Messages;
 import de.imdacro.economySystem.utils.Metrics;
 import de.imdacro.economySystem.vault.Vault;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,8 +31,6 @@ public final class EconomySystem extends JavaPlugin {
         loadMessages();
     }
 
-    //TODO: Add Async where possible - database operations, event calls, etc.
-
     @Override
     public void onEnable() {
 
@@ -42,6 +42,11 @@ public final class EconomySystem extends JavaPlugin {
             return getConfig().getString("economy.currency-name");
         }));
 
+        // PlaceholderAPI support
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new MoneyTopExpansion(this).register();
+            getLogger().info("MoneyTop PlaceholderAPI Expansion loaded!");
+        }
 
         // Register listeners
         PluginManager pluginManager = getServer().getPluginManager();
