@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.UUID;
 
 public class LiteSQLManager implements DatabaseManager {
@@ -166,17 +167,13 @@ public class LiteSQLManager implements DatabaseManager {
     }
 
     @Override
-    public HashMap<String, Double> getTopBalances(int limit) {
-        HashMap<String, Double> topBalances = new HashMap<>();
+    public LinkedHashMap<String, Double> getTopBalances(int limit) {
+        LinkedHashMap<String, Double> topBalances = new LinkedHashMap<>();
         try (Statement stmt = connection.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT uuid, balance FROM economy ORDER BY balance DESC LIMIT " + limit*2);
             while (resultSet.next()) {
 
-                // Check if Permission ignore
-                if (plugin.getServer().getOfflinePlayer(UUID.fromString(resultSet.getString("uuid"))) != null && plugin.getServer().getOfflinePlayer(UUID.fromString(resultSet.getString("uuid"))).getPlayer().hasPermission("economysystem.toplist.ignore")) {
-                    continue;
-                }
-
+                UUID uuid = UUID.fromString(resultSet.getString("uuid"));
                 // Check if already Limit
                 if (topBalances.size() >= limit) {
                     break;

@@ -13,8 +13,10 @@ import de.imdacro.economySystem.placeholderapi.MoneyTopExpansion;
 import de.imdacro.economySystem.utils.Messages;
 import de.imdacro.economySystem.utils.Metrics;
 import de.imdacro.economySystem.vault.Vault;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -24,6 +26,7 @@ public final class EconomySystem extends JavaPlugin {
 
     private Messages messages;
     private DatabaseManager databaseManager;
+    private Permission permissions = null;
 
     @Override
     public void onLoad() {
@@ -37,6 +40,8 @@ public final class EconomySystem extends JavaPlugin {
         // Metrics Data
         int pluginId = 27089;
         Metrics metrics = new Metrics(this, pluginId);
+
+        setupPermissions();
 
         metrics.addCustomChart(new Metrics.SimplePie("currency_type", () -> {
             return getConfig().getString("economy.currency-name");
@@ -79,6 +84,12 @@ public final class EconomySystem extends JavaPlugin {
         }
     }
 
+    private boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        permissions = rsp.getProvider();
+        return permissions != null;
+    }
+
 
     private void setupDatabase() {
         String dbType = getConfig().getString("database.type", "litesql");
@@ -116,5 +127,9 @@ public final class EconomySystem extends JavaPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public Permission getPermissions() {
+        return permissions;
     }
 }
