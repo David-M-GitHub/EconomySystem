@@ -1,6 +1,7 @@
 package de.imdacro.economySystem.vault;
 
 import de.imdacro.economySystem.EconomySystem;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import java.lang.reflect.*;
@@ -32,46 +33,44 @@ public class ReflectionVault {
             case "isEnabled":
               return true;
             case "hasAccount": {
-              String playerName = (String) args[0];
-              UUID id = plugin.getServer().getOfflinePlayer(playerName).getUniqueId();
+              UUID id = getTargetUUID(args[0]);
+              if (id == null) return false;
               return plugin.getDatabaseManager().accountExists(id.toString());
             }
             case "createPlayerAccount": {
-              String playerName = (String) args[0];
-              UUID id = plugin.getServer().getOfflinePlayer(playerName).getUniqueId();
+              UUID id = getTargetUUID(args[0]);
+              if (id == null) return false;
               plugin.getDatabaseManager().createAccount(id.toString());
               return true;
             }
             case "getBalance": {
-              String playerName = (String) args[0];
-              UUID id = plugin.getServer().getOfflinePlayer(playerName).getUniqueId();
+              UUID id = getTargetUUID(args[0]);
+              if (id == null) return 0.0D;
               return plugin.getDatabaseManager().getBalance(id.toString());
             }
             case "has": {
-              String playerName = (String) args[0];
+              UUID id = getTargetUUID(args[0]);
+              if (id == null) return false;
               double amount = ((Number) args[1]).doubleValue();
-              UUID id = plugin.getServer().getOfflinePlayer(playerName).getUniqueId();
               return plugin.getDatabaseManager().getBalance(id.toString()) >= amount;
             }
             case "withdrawPlayer": {
-              String playerName = (String) args[0];
+              UUID id = getTargetUUID(args[0]);
               double amount = ((Number) args[1]).doubleValue();
-              UUID id = plugin.getServer().getOfflinePlayer(playerName).getUniqueId();
+              if (id == null) return createEconomyResponse(econRespClass, respTypeClass, amount, 0.0D, "FAILURE", "Player not found");
               plugin.getDatabaseManager().removeBalance(id.toString(), amount);
               plugin.getDatabaseManager().createTransaction(id.toString(), "VAULT", amount);
               double balance = plugin.getDatabaseManager().getBalance(id.toString());
-              Object response = createEconomyResponse(econRespClass, respTypeClass, amount, balance, "SUCCESS", "");
-              return response;
+              return createEconomyResponse(econRespClass, respTypeClass, amount, balance, "SUCCESS", "");
             }
             case "depositPlayer": {
-              String playerName = (String) args[0];
+              UUID id = getTargetUUID(args[0]);
               double amount = ((Number) args[1]).doubleValue();
-              UUID id = plugin.getServer().getOfflinePlayer(playerName).getUniqueId();
+              if (id == null) return createEconomyResponse(econRespClass, respTypeClass, amount, 0.0D, "FAILURE", "Player not found");
               plugin.getDatabaseManager().addBalance(id.toString(), amount);
               plugin.getDatabaseManager().createTransaction("VAULT", id.toString(), amount);
               double balance = plugin.getDatabaseManager().getBalance(id.toString());
-              Object response = createEconomyResponse(econRespClass, respTypeClass, amount, balance, "SUCCESS", "");
-              return response;
+              return createEconomyResponse(econRespClass, respTypeClass, amount, balance, "SUCCESS", "");
             }
             default:
               Class<?> returnType = method.getReturnType();
@@ -95,6 +94,15 @@ public class ReflectionVault {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private UUID getTargetUUID(Object arg) {
+    if (arg instanceof OfflinePlayer) {
+      return ((OfflinePlayer) arg).getUniqueId();
+    } else if (arg instanceof String) {
+      return plugin.getServer().getOfflinePlayer((String) arg).getUniqueId();
+    }
+    return null;
   }
 
   private Object createEconomyResponse(Class<?> econRespClass, Class<?> respTypeClass, double amount, double balance, String respName, String errorMessage) throws Exception {
