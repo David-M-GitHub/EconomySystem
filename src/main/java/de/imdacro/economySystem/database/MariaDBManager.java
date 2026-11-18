@@ -176,6 +176,8 @@ public class MariaDBManager implements DatabaseManager {
 
         String sql = "UPDATE economy SET balance = ? WHERE uuid = ?";
 
+        double oldBalance = getBalance(uuid);
+
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -184,8 +186,8 @@ public class MariaDBManager implements DatabaseManager {
             ps.executeUpdate();
 
             BalanceChangeEvent evt =
-                    new BalanceChangeEvent(Bukkit.getPlayer(UUID.fromString(uuid)),
-                            balance, !Bukkit.isPrimaryThread());
+                    new BalanceChangeEvent(UUID.fromString(uuid), Bukkit.getPlayer(UUID.fromString(uuid)),
+                            oldBalance, balance, !Bukkit.isPrimaryThread());
 
             Bukkit.getPluginManager().callEvent(evt);
 
