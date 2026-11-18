@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'com.gradleup.shadow' version '9.2.2'
 }
 
 group = 'de.imdacro'
@@ -33,16 +32,12 @@ dependencies {
         exclude group: "org.bukkit", module: "bukkit"
     }
 
-    // MariaDB JDBC Driver
-    implementation 'com.zaxxer:HikariCP:5.1.0'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
+    // Downloaded by the server at startup via the `libraries` section in plugin.yml
+    // (keep the versions in sync with plugin.yml)
+    compileOnly 'com.zaxxer:HikariCP:5.1.0'
+    compileOnly 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
 }
 
-
-shadowJar {
-    relocate 'com.zaxxer.hikari', 'de.imdacro.libs.hikari'
-    relocate 'org.mariadb.jdbc', 'de.imdacro.libs.mariadb'
-}
 
 def targetJavaVersion = 25
 java {
@@ -69,11 +64,4 @@ processResources {
     filesMatching('plugin.yml') {
         expand props
     }
-}
-
-jar {
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
