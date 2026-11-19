@@ -111,6 +111,7 @@ public class MariaDBManager implements DatabaseManager {
             ps.executeUpdate();
 
             createTransaction("SERVER", uuid, startBalance);
+            plugin.getAccountNames().add(uuid);
 
         } catch (SQLException e) {
             plugin.getLogger().severe("Error creating account for " + uuid);
@@ -176,6 +177,8 @@ public class MariaDBManager implements DatabaseManager {
 
         String sql = "UPDATE economy SET balance = ? WHERE uuid = ?";
 
+        double oldBalance = getBalance(uuid);
+
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -184,8 +187,8 @@ public class MariaDBManager implements DatabaseManager {
             ps.executeUpdate();
 
             BalanceChangeEvent evt =
-                    new BalanceChangeEvent(Bukkit.getPlayer(UUID.fromString(uuid)),
-                            balance, !Bukkit.isPrimaryThread());
+                    new BalanceChangeEvent(UUID.fromString(uuid), Bukkit.getPlayer(UUID.fromString(uuid)),
+                            oldBalance, balance, !Bukkit.isPrimaryThread());
 
             Bukkit.getPluginManager().callEvent(evt);
 
@@ -261,6 +264,22 @@ public class MariaDBManager implements DatabaseManager {
         }
 
         return map;
+    }
+
+    @Override
+    public java.util.List<String> getAllAccountUuids() {
+        java.util.List<String> uuids = new java.util.ArrayList<>();
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT uuid FROM economy")) {
+            while (rs.next()) {
+                uuids.add(rs.getString("uuid"));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Error fetching account list.");
+            e.printStackTrace();
+        }
+        return uuids;
     }
 
     public CompletableFuture<HashMap<String, Double>> getTopBalancesAsync(int limit) {

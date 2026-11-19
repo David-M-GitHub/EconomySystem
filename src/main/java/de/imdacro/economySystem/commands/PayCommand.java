@@ -4,12 +4,14 @@ import de.imdacro.economySystem.EconomySystem;
 import de.imdacro.economySystem.database.DatabaseManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class PayCommand implements CommandExecutor {
+import java.util.List;
+
+public class PayCommand implements TabExecutor {
 
     private final EconomySystem plugin;
 
@@ -83,5 +85,13 @@ public class PayCommand implements CommandExecutor {
         target.sendMessage(plugin.getMessages().get("pay-success-receiver", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if (args.length == 1) {
+            return TabCompletion.onlinePlayers(sender, args[0]);
+        }
+        return List.of();
     }
 }

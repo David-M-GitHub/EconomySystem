@@ -3,6 +3,10 @@ version: '1.1-SNAPSHOT'
 main: de.imdacro.economySystem.EconomySystem
 api-version: '1.21'
 authors: [ ImDacro ]
+libraries:
+  - com.zaxxer:HikariCP:5.1.0
+  - org.mariadb.jdbc:mariadb-java-client:3.3.2
+
 softdepend:
   - Vault
   - PlaceholderAPI

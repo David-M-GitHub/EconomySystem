@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
@@ -85,6 +84,7 @@ public class LiteSQLManager implements DatabaseManager {
             ps.executeUpdate();
             plugin.getLogger().info("Account created for " + uuid + " with balance " + startBalance);
             createTransaction("SERVER", uuid, startBalance);
+            plugin.getAccountNames().add(uuid);
         } catch (SQLException e) {
             e.printStackTrace();
             plugin.getLogger().severe("Error creating account for " + uuid);
@@ -124,13 +124,14 @@ public class LiteSQLManager implements DatabaseManager {
     public void setBalance(String uuid, double balance) {
         if (balance < 0) balance = 0;
         try {
+            double oldBalance = getBalance(uuid);
             PreparedStatement statement = connection.prepareStatement("UPDATE economy SET balance = ? WHERE uuid = ?");
             statement.setDouble(1, balance);
             statement.setString(2, uuid);
             statement.executeUpdate();
 
             // Call Event
-            BalanceChangeEvent balanceChangeEvent = new BalanceChangeEvent(Bukkit.getPlayer(UUID.fromString(uuid)), balance, !Bukkit.isPrimaryThread());
+            BalanceChangeEvent balanceChangeEvent = new BalanceChangeEvent(UUID.fromString(uuid), Bukkit.getPlayer(UUID.fromString(uuid)), oldBalance, balance, !Bukkit.isPrimaryThread());
             Bukkit.getPluginManager().callEvent(balanceChangeEvent);
 
         } catch (SQLException e) {
@@ -186,6 +187,21 @@ public class LiteSQLManager implements DatabaseManager {
             plugin.getLogger().severe("Error fetching top balances.");
         }
         return topBalances;
+    }
+
+    @Override
+    public java.util.List<String> getAllAccountUuids() {
+        java.util.List<String> uuids = new java.util.ArrayList<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT uuid FROM economy")) {
+            while (rs.next()) {
+                uuids.add(rs.getString("uuid"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            plugin.getLogger().severe("Error fetching account list.");
+        }
+        return uuids;
     }
 
     @Override

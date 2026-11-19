@@ -7,12 +7,14 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class BalanceCommand implements CommandExecutor {
+import java.util.List;
+
+public class BalanceCommand implements TabExecutor {
 
     private final EconomySystem plugin;
 
@@ -59,5 +61,13 @@ public class BalanceCommand implements CommandExecutor {
         player.sendMessage(plugin.getMessages().get("balance-message-other", "%player%", target.getName(), "%balance%", String.valueOf(balance)));
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if (args.length == 1 && sender.hasPermission("economysystem.command.balance.other")) {
+            return TabCompletion.players(plugin, sender, args[0], false);
+        }
+        return List.of();
     }
 }

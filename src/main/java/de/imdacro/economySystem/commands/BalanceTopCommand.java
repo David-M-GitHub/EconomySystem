@@ -3,14 +3,15 @@ package de.imdacro.economySystem.commands;
 import de.imdacro.economySystem.EconomySystem;
 import de.imdacro.economySystem.utils.Messages;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
-public class BalanceTopCommand implements CommandExecutor {
+public class BalanceTopCommand implements TabExecutor {
 
     private final EconomySystem plugin;
 
@@ -49,5 +50,10 @@ public class BalanceTopCommand implements CommandExecutor {
 
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        return List.of();
     }
 }

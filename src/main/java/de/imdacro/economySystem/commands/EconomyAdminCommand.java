@@ -3,11 +3,13 @@ package de.imdacro.economySystem.commands;
 import de.imdacro.economySystem.EconomySystem;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-public class EconomyAdminCommand implements CommandExecutor {
+import java.util.List;
+
+public class EconomyAdminCommand implements TabExecutor {
 
     private final EconomySystem plugin;
 
@@ -66,11 +68,11 @@ public class EconomyAdminCommand implements CommandExecutor {
         switch (args[0]) {
             case "set":
                 plugin.getDatabaseManager().setBalance(playerUuid, amount);
-                commandSender.sendMessage(plugin.getMessages().get("set-balance-success", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
+                commandSender.sendMessage(plugin.getMessages().get("balance-set-success", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
                 break;
             case "add":
                 plugin.getDatabaseManager().addBalance(playerUuid, amount);
-                commandSender.sendMessage(plugin.getMessages().get("add-balance-success", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
+                commandSender.sendMessage(plugin.getMessages().get("balance-add-success", "%player%", player.getName(), "%amount%", String.valueOf(amount)));
                 break;
             case "remove":
                 plugin.getDatabaseManager().removeBalance(playerUuid, amount);
@@ -83,5 +85,18 @@ public class EconomyAdminCommand implements CommandExecutor {
 
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        return switch (args.length) {
+            case 1 -> TabCompletion.filter(List.of("set", "add", "remove", "balance"), args[0]);
+            case 2 -> isSubCommand(args[0]) ? TabCompletion.players(plugin, sender, args[1], false) : List.of();
+            default -> List.of();
+        };
+    }
+
+    private static boolean isSubCommand(String arg) {
+        return List.of("set", "add", "remove", "balance").contains(arg.toLowerCase());
     }
 }
