@@ -9,6 +9,7 @@ import de.imdacro.economySystem.database.LiteSQLManager;
 import de.imdacro.economySystem.database.MariaDBManager;
 import de.imdacro.economySystem.listener.PlayerJoinListener;
 import de.imdacro.economySystem.placeholderapi.MoneyTopExpansion;
+import de.imdacro.economySystem.utils.AccountNames;
 import de.imdacro.economySystem.utils.Messages;
 import de.imdacro.economySystem.utils.Metrics;
 import de.imdacro.economySystem.vault.ReflectionVault;
@@ -23,6 +24,7 @@ public final class EconomySystem extends JavaPlugin {
 
     private Messages messages;
     private DatabaseManager databaseManager;
+    private final AccountNames accountNames = new AccountNames(this);
 
     @Override
     public void onLoad() {
@@ -53,17 +55,30 @@ public final class EconomySystem extends JavaPlugin {
         pluginManager.registerEvents(new PlayerJoinListener(this), this);
 
         // Register commands
-        this.getCommand("balance").setExecutor(new BalanceCommand(this));
-        this.getCommand("pay").setExecutor(new PayCommand(this));
-        this.getCommand("economyadmin").setExecutor(new EconomyAdminCommand(this));
-        getCommand("balancetop").setExecutor(new BalanceTopCommand(this));
+        registerCommand("balance", new BalanceCommand(this));
+        registerCommand("pay", new PayCommand(this));
+        registerCommand("economyadmin", new EconomyAdminCommand(this));
+        registerCommand("balancetop", new BalanceTopCommand(this));
 
         setupDatabase();
+        if (databaseManager != null) {
+            accountNames.load();
+        }
 
         // Vault integration (optional)
         new ReflectionVault(this);
 
         getServer().getConsoleSender().sendMessage(messages.get("plugin-enabled") + "");
+    }
+
+    private void registerCommand(String name, org.bukkit.command.TabExecutor handler) {
+        org.bukkit.command.PluginCommand command = getCommand(name);
+        if (command == null) {
+            getLogger().severe("Command '" + name + "' is missing from plugin.yml!");
+            return;
+        }
+        command.setExecutor(handler);
+        command.setTabCompleter(handler);
     }
 
     private void loadMessages() {
@@ -112,6 +127,10 @@ public final class EconomySystem extends JavaPlugin {
 
     public Messages getMessages() {
         return messages;
+    }
+
+    public AccountNames getAccountNames() {
+        return accountNames;
     }
 
     public DatabaseManager getDatabaseManager() {

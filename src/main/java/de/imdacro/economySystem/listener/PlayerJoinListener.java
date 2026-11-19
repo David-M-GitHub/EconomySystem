@@ -23,5 +23,8 @@ public class PlayerJoinListener implements Listener {
         if (!dbManager.accountExists(uuid)) {
             dbManager.createAccount(uuid);
         }
+
+        // Keep the tab completion name in sync (also picks up name changes)
+        plugin.getAccountNames().add(uuid);
     }
 }

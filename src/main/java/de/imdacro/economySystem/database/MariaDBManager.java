@@ -111,6 +111,7 @@ public class MariaDBManager implements DatabaseManager {
             ps.executeUpdate();
 
             createTransaction("SERVER", uuid, startBalance);
+            plugin.getAccountNames().add(uuid);
 
         } catch (SQLException e) {
             plugin.getLogger().severe("Error creating account for " + uuid);
@@ -263,6 +264,22 @@ public class MariaDBManager implements DatabaseManager {
         }
 
         return map;
+    }
+
+    @Override
+    public java.util.List<String> getAllAccountUuids() {
+        java.util.List<String> uuids = new java.util.ArrayList<>();
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT uuid FROM economy")) {
+            while (rs.next()) {
+                uuids.add(rs.getString("uuid"));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Error fetching account list.");
+            e.printStackTrace();
+        }
+        return uuids;
     }
 
     public CompletableFuture<HashMap<String, Double>> getTopBalancesAsync(int limit) {
